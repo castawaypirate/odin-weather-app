@@ -6,8 +6,14 @@ let speedUnit;
 
 const form = document.querySelector("form");
 
-form.addEventListener("submit", (event) => {
+form.addEventListener("submit", async (event) => {
   event.preventDefault();
+
+  const loader = document.querySelector(".loader");
+  const results = document.querySelector("#results");
+
+  loader.style.display = "block";
+  results.style.display = "none";
 
   const formData = new FormData(form);
   const formDataEntries = Object.fromEntries(formData);
@@ -20,28 +26,26 @@ form.addEventListener("submit", (event) => {
     speedUnit = "km/h";
   }
 
-  fetchWeatherData(formDataEntries)
-    .then((weatherResponse) => {
-      if (weatherResponse) {
-        console.log(weatherResponse);
-        renderWeatherResults(weatherResponse);
-        console.log(weatherResponse.currentConditions.conditions);
-        fetchPexelsPhotos(weatherResponse.currentConditions.conditions)
-          .then((pexelsResponse) => {
-            console.log(pexelsResponse);
-            const min = 0;
-            const max = pexelsResponse.photos.length - 1;
-            const index = Math.floor(Math.random() * (max - min + 1)) + min;
-            renderPexelsPhoto(pexelsResponse.photos[index].src.large2x);
-          })
-          .catch((pexelsErr) => {
-            alert(pexelsErr);
-          });
-      }
-    })
-    .catch((weatherErr) => {
-      alert(weatherErr);
-    });
+  try {
+    const weatherResponse = await fetchWeatherData(formDataEntries);
+    const pexelsResponse = await fetchPexelsPhotos(
+      weatherResponse.currentConditions.icon,
+    );
+
+    const min = 0;
+    const max = pexelsResponse.photos.length - 1;
+    const index = Math.floor(Math.random() * (max - min + 1)) + min;
+    const imageUrl = pexelsResponse.photos[index].src.large2x;
+
+    await renderPexelsPhoto(imageUrl);
+    renderWeatherResults(weatherResponse);
+
+    results.style.display = "flex";
+  } catch (err) {
+    alert(err);
+  } finally {
+    loader.style.display = "none";
+  }
 });
 
 async function fetchPexelsPhotos(query) {
@@ -68,14 +72,22 @@ async function fetchPexelsPhotos(query) {
 }
 
 function renderPexelsPhoto(url) {
-  console.log(url);
-  const body = document.querySelector(".container");
-  body.style.backgroundImage = `url(${url})`;
-  body.style.backgroundPositionY = "";
-  // const results = document.querySelector(".results");
-  // const photo = document.createElement("img");
-  // photo.src = url;
-  // results.appendChild(photo);
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+
+    img.onload = () => {
+      const body = document.querySelector(".container");
+      body.style.backgroundImage = `url(${url})`;
+      body.style.backgroundPositionY = "";
+      resolve();
+    };
+
+    img.onerror = () => {
+      reject(new Error("Background image failed to load."));
+    };
+
+    img.src = url;
+  });
 }
 
 async function fetchWeatherData(formData) {
@@ -164,35 +176,3 @@ const icons = {
   "clear-day": `<svg xmlns="http://www.w3.org/2000/svg" height="72px" viewBox="0 -960 960 960" width="72px" fill="#1f1f1f"><path d="M440-760v-160h80v160h-80Zm266 110-55-55 112-115 56 57-113 113Zm54 210v-80h160v80H760ZM440-40v-160h80v160h-80ZM254-652 140-763l57-56 113 113-56 54Zm508 512L651-255l54-54 114 110-57 59ZM40-440v-80h160v80H40Zm157 300-56-57 112-112 29 27 29 28-114 114Zm113-170q-70-70-70-170t70-170q70-70 170-70t170 70q70 70 70 170t-70 170q-70 70-170 70t-170-70Zm283-57q47-47 47-113t-47-113q-47-47-113-47t-113 47q-47 47-47 113t47 113q47 47 113 47t113-47ZM480-480Z"/></svg>`,
   "clear-night": `<svg xmlns="http://www.w3.org/2000/svg" height="72px" viewBox="0 -960 960 960" width="72px" fill="#1f1f1f"><path d="M484-80q-84 0-157.5-32t-128-86.5Q144-253 112-326.5T80-484q0-146 93-257.5T410-880q-18 99 11 193.5T521-521q71 71 165.5 100T880-410q-26 144-138 237T484-80Zm0-80q88 0 163-44t118-121q-86-8-163-43.5T464-465q-61-61-97-138t-43-163q-77 43-120.5 118.5T160-484q0 135 94.5 229.5T484-160Zm-20-305Z"/></svg>`,
 };
-
-async function fetchGIFs(searchTerm) {
-  let response = await fetch(
-    `https://api.giphy.com/v1/gifs/search?api_key=B1ko1YKVLMqqbniw2K6ZNFdhVSeKLDpI&q=${searchTerm} weather`,
-  );
-
-  // let response = await fetch(
-  //   `https://api.giphy.com/v1/gifs/translate?api_key=B1ko1YKVLMqqbniw2K6ZNFdhVSeKLDpI&s=${searchTerm}`,
-  // );
-
-  // let response = await fetch(
-  //   `https://api.giphy.com/v1/gifs/search?api_key=B1ko1YKVLMqqbniw2K6ZNFdhVSeKLDpI&q=${searchTerm}`,
-  //   { mode: "no-cors" },
-  // );
-
-  if (!response.ok) {
-    const errorMessage = await response.text();
-    throw new Error(`Error: ${response.status} - ${errorMessage}`);
-  }
-
-  let data = await response.json();
-  return data;
-}
-
-function renderGIF(url) {
-  // const body = document.querySelector(".container");
-  // body.style.backgroundImage = `url(${url})`;
-  const results = document.querySelector(".results");
-  const gif = document.createElement("img");
-  gif.src = url;
-  results.appendChild(gif);
-}
