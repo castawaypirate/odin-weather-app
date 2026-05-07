@@ -16,10 +16,16 @@ body {
   align-items: center;
   padding: 1rem;
   height: 100vh;
-  object-fit: fill;
+
+  /* object-fit: fill; */
+
+  background-size: cover;
+  background-position: center;
   background-repeat: no-repeat;
   background-image: url("../../assets/pexels-peter-kovesi-421914941-15171911.jpg");
-  background-position-y: 50%;
+
+  /* background-position-y: 50%; */
+  /* background-size: 100%; */
 }
 
 h1 {
@@ -117,7 +123,7 @@ form {
 
   .location,
   .icon,
-  .temprature {
+  .temperature {
     align-self: center;
   }
 
@@ -125,7 +131,7 @@ form {
     margin-top: 0.3rem;
   }
 
-  .temprature {
+  .temperature {
     display: flex;
     flex-direction: row;
     margin-bottom: 0.3rem;

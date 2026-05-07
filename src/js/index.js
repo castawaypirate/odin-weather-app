@@ -35,7 +35,7 @@ form.addEventListener("submit", async (event) => {
     const min = 0;
     const max = pexelsResponse.photos.length - 1;
     const index = Math.floor(Math.random() * (max - min + 1)) + min;
-    const imageUrl = pexelsResponse.photos[index].src.large2x;
+    const imageUrl = pexelsResponse.photos[index].src.original;
 
     await renderPexelsPhoto(imageUrl);
     renderWeatherResults(weatherResponse);
@@ -71,23 +71,36 @@ async function fetchPexelsPhotos(query) {
   return response;
 }
 
-function renderPexelsPhoto(url) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
+async function renderPexelsPhoto(url) {
+  const img = new Image();
 
-    img.onload = () => {
-      const body = document.querySelector(".container");
-      body.style.backgroundImage = `url(${url})`;
-      body.style.backgroundPositionY = "";
-      resolve();
-    };
+  img.src = url;
 
-    img.onerror = () => {
-      reject(new Error("Background image failed to load."));
-    };
+  try {
+    await img.decode();
 
-    img.src = url;
-  });
+    const body = document.querySelector(".container");
+    body.style.backgroundImage = `url(${url})`;
+  } catch (err) {
+    throw new Error("Background image failed to load.");
+  }
+  // return new Promise((resolve, reject) => {
+  //   const img = new Image();
+  //
+  //   img.onload = () => {
+  //     img.decode();
+  //     const body = document.querySelector(".container");
+  //     body.style.backgroundImage = `url(${url})`;
+  //     body.style.backgroundPositionY = "";
+  //     resolve();
+  //   };
+  //
+  //   img.onerror = () => {
+  //     reject(new Error("Background image failed to load."));
+  //   };
+  //
+  //   img.src = url;
+  // });
 }
 
 async function fetchWeatherData(formData) {
@@ -128,14 +141,14 @@ function renderWeatherResults(data) {
   const svgIcon = icons[`${iconValue}`];
   iconDiv.innerHTML = svgIcon;
 
-  const tempratureDiv = document.createElement("div");
-  const temprature = document.createElement("h3");
-  temprature.textContent = currentConditions.temp;
+  const temperatureDiv = document.createElement("div");
+  const temperature = document.createElement("h3");
+  temperature.textContent = currentConditions.temp;
   const unitSpan = document.createElement("span");
   unitSpan.innerHTML = tempUnit;
-  tempratureDiv.appendChild(temprature);
-  tempratureDiv.appendChild(unitSpan);
-  tempratureDiv.classList.add("temprature");
+  temperatureDiv.appendChild(temperature);
+  temperatureDiv.appendChild(unitSpan);
+  temperatureDiv.classList.add("temperature");
 
   const statsDiv = document.createElement("div");
   const stats = document.createElement("span");
@@ -161,7 +174,7 @@ function renderWeatherResults(data) {
   results.appendChild(conditionsDiv);
   results.appendChild(location);
   results.appendChild(iconDiv);
-  results.appendChild(tempratureDiv);
+  results.appendChild(temperatureDiv);
   results.appendChild(statsDiv);
 }
 
