@@ -1,0 +1,139 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  overflow: hidden;
+  height: 100vh;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  height: 100vh;
+  object-fit: fill;
+  background-repeat: no-repeat;
+  background-image: url(cf933c50b77ae202f361.jpg);
+  background-position-y: 50%;
+}
+
+h1 {
+  padding: 1rem;
+}
+
+form {
+  box-sizing: border-box;
+  background-color: whitesmoke;
+  border-radius: 5px;
+  padding: 1rem;
+  margin: 2rem;
+
+  .search {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+  }
+
+  label {
+    font-weight: bold;
+  }
+
+  label,
+  legend {
+    margin-bottom: 0.3rem;
+  }
+
+  .form-control {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+  }
+
+  fieldset {
+    border: 0;
+  }
+
+  button {
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    outline: inherit;
+    display: flex;
+    align-items: center;
+    margin-left: 0.3rem;
+  }
+
+  input {
+    flex-grow: 1;
+  }
+}
+
+.loader {
+  display: none;
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid slategrey;
+  width: 60px;
+  height: 60px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.results {
+  box-sizing: border-box;
+  background-color: whitesmoke;
+  border-radius: 5px;
+  padding: 1rem;
+  margin: 2rem;
+  display: flex;
+  flex-direction: column;
+
+  .location,
+  .icon,
+  .temprature {
+    align-self: center;
+  }
+
+  .location {
+    margin-top: 0.3rem;
+  }
+
+  .temprature {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 0.3rem;
+    span {
+      font-size: 1.17em;
+      font-weight: bold;
+      margin-left: 0.3rem;
+    }
+  }
+}
+
